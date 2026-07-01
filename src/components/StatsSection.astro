@@ -1,0 +1,15 @@
+---
+import { homepage } from '../data/homepage';
+const { stats } = homepage;
+---
+<section class="stats-section">
+  <div class="stats-grid">
+    {stats.map((s, i) => (
+      <div class="stat-item sr" style={i === 0 ? undefined : `transition-delay:.${i}s`}>
+        <div class="stat-num-wrap"><div class="stat-num" data-target={s.target}>0</div><div class="stat-unit">{s.unit}</div></div>
+        <div class="stat-label">{s.label}</div>
+        <div class="stat-desc">{s.desc}</div>
+      </div>
+    ))}
+  </div>
+</section>

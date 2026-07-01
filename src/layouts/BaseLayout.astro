@@ -1,0 +1,46 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import SubscribeModal from '../components/SubscribeModal.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <slot name="head" />
+  </head>
+  <body>
+    <div id="pgBar"></div>
+    <div id="cursorDot"></div>
+    <div id="cursorRing"></div>
+
+    <Nav />
+
+    <slot />
+
+    <Footer />
+
+    <SubscribeModal />
+
+    <script>
+      import { initCommonUI } from '../scripts/ui.js';
+      import { initSubscribeModal } from '../scripts/subscribe.js';
+      document.addEventListener('DOMContentLoaded', () => {
+        initSubscribeModal();
+        initCommonUI();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+---
+import type { Post } from '../data/posts';
+import { categories, coverImage, badgeClass, postSlug } from '../data/posts';
+
+interface Props {
+  post: Post;
+  grid?: boolean;
+}
+const { post, grid = false } = Astro.props;
+const dt = new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const href = `/blog/${postSlug(post)}/`;
+---
+<div class={`a-card${grid ? ' gm' : ''}`} data-date={post.date} onclick={`location.href='${href}'`}>
+  <div class="a-banner">
+    <img src={coverImage(post.id)} alt={post.title} />
+    <span class={`a-badge ${badgeClass(post.cat)}`}>{categories[post.cat].label}</span>
+  </div>
+  <div class="a-body">
+    <h3>{post.title}</h3>
+    <p>{post.excerpt}</p>
+    <div class="a-foot">
+      <span class="a-meta">{dt} · {post.rt}</span>
+      <span class="a-read">Read →</span>
+    </div>
+  </div>
+</div>

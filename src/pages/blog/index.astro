@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { categories, getPostsByCategory } from '../../data/posts';
+
+const cats = ['investment', 'hidden', 'strategy'] as const;
+---
+<BaseLayout title="Our Content — Iran Investments" description="Three categories. One mission. Intelligence that moves you.">
+  <div class="cp-hero">
+    <div class="st">Our Content</div>
+    <h1>Intelligence That <em style="background:linear-gradient(90deg,#eb5e3e,#c43e20,#ff7050,#eb5e3e);background-size:200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3.5s linear infinite">Moves You.</em></h1>
+    <p>Three categories. One mission.</p>
+  </div>
+
+  {cats.map((s) => {
+    const list = getPostsByCategory(s);
+    const m = categories[s];
+    return (
+      <div class="cp-sec">
+        <div class="cp-sec-inner">
+          <div class="cp-sec-hd">
+            <div class="cp-sec-hd-left">
+              <div class="st">{m.label}</div>
+              <h2>{m.label}</h2>
+              <p>{m.desc}</p>
+            </div>
+            <div class="sl-btns">
+              <button class="sl-btn" onclick={`cpSlide('${s}',-1)`}>←</button>
+              <button class="sl-btn" onclick={`cpSlide('${s}',1)`}>→</button>
+            </div>
+          </div>
+          <div class="sl-outer">
+            <div class="sl-track" id={`cpt-${s}`}>
+              {list.map((post) => <PostCard post={post} />)}
+            </div>
+          </div>
+          <button class="view-all-btn" onclick={`location.href='/blog/category/${s}/'`}>View All {m.label} →</button>
+        </div>
+      </div>
+    );
+  })}
+
+  <script>
+    import { initBlogIndex } from '../../scripts/blogIndex.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      initBlogIndex();
+    });
+  </script>
+</BaseLayout>

@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Ticker from '../components/Ticker.astro';
+import WhySection from '../components/WhySection.astro';
+import StatsSection from '../components/StatsSection.astro';
+import ScrollJourney from '../components/ScrollJourney.astro';
+import WhoWeAre from '../components/WhoWeAre.astro';
+import Vision from '../components/Vision.astro';
+import BlogSlider from '../components/BlogSlider.astro';
+import Banner from '../components/Banner.astro';
+import { homepage } from '../data/homepage';
+---
+<BaseLayout title={homepage.seo.title} description={homepage.seo.description}>
+  <script slot="head" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <Hero />
+  <Ticker />
+  <WhySection />
+  <StatsSection />
+  <ScrollJourney />
+  <WhoWeAre />
+  <Vision />
+  <BlogSlider />
+  <Banner />
+
+  <script>
+    import { initHome } from '../scripts/home.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      initHome();
+    });
+  </script>
+</BaseLayout>

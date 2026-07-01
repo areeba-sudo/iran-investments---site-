@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostCard from '../../../components/PostCard.astro';
+import { categories, getPostsByCategory } from '../../../data/posts';
+
+export function getStaticPaths() {
+  return ['investment', 'hidden', 'strategy'].map((category) => ({ params: { category } }));
+}
+
+const { category } = Astro.params as { category: 'investment' | 'hidden' | 'strategy' };
+const m = categories[category];
+const bgM: Record<string, string> = {
+  investment: 'background:rgba(189,213,166,.3);color:var(--gdk)',
+  hidden: 'background:rgba(235,94,62,.12);color:var(--red2)',
+  strategy: 'background:rgba(44,6,79,.08);color:var(--text)',
+};
+const sorted = getPostsByCategory(category).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+---
+<BaseLayout title={`${m.label} — Iran Investments`} description={m.desc}>
+  <div class="cat-hero">
+    <div class="cat-hero-inner">
+      <div class="cat-bc"><a href="/">Home</a><span>›</span><a href="/blog/">Content</a><span>›</span>{m.label}</div>
+      <span class="cat-badge-el" style={bgM[category]}>{m.label}</span>
+      <h1>{m.label}</h1>
+      <p class="cat-sub">{m.desc}</p>
+    </div>
+  </div>
+  <div class="cat-filter">
+    <div class="cat-fi">
+      <span class="f-count">{sorted.length} Article{sorted.length !== 1 ? 's' : ''}</span>
+      <div class="f-right">
+        <span class="f-lbl">Sort:</span>
+        <select class="f-sel" onchange="setCF(this.value)">
+          <option value="newest" selected>Newest to Oldest</option>
+          <option value="oldest">Oldest to Newest</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="cat-grid-wrap">
+    <div class="cat-grid">
+      {sorted.map((post) => <PostCard post={post} grid />)}
+    </div>
+  </div>
+
+  <script>
+    import { initCategorySort } from '../../../scripts/categorySort.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      initCategorySort();
+    });
+  </script>
+</BaseLayout>

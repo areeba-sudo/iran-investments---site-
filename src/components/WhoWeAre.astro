@@ -1,0 +1,22 @@
+---
+import { homepage } from '../data/homepage';
+const { whoWeAre } = homepage;
+---
+<div class="wwa-wrap">
+  <div class="wwa-inner">
+    <div class="sr-l">
+      <span class="section-tag">{whoWeAre.tag}</span>
+      <h2>{whoWeAre.heading}</h2>
+      <p class="tagline">{whoWeAre.tagline}</p>
+      <p>{whoWeAre.body}</p>
+    </div>
+    <div class="sr-r">
+      <p style="color:rgba(250,249,245,.3);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:16px">Who reads us</p>
+      <div class="for-grid">
+        {whoWeAre.readerCards.map((c) => (
+          <div class="for-card"><h4>{c.title}</h4><p>{c.body}</p></div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+---
+import { homepage } from '../data/homepage';
+import { posts } from '../data/posts';
+import PostCard from './PostCard.astro';
+const { blogSection } = homepage;
+---
+<div class="blog-wrap">
+  <div class="blog-inner">
+    <div class="blog-hd">
+      <div class="blog-hd-left">
+        <div class="section-tag">{blogSection.tag}</div>
+        <h2>{blogSection.heading}</h2>
+      </div>
+      <div class="sl-btns">
+        <button class="sl-btn" onclick="hSlide(-1)">←</button>
+        <button class="sl-btn" onclick="hSlide(1)">→</button>
+      </div>
+    </div>
+    <div class="sl-outer">
+      <div class="sl-track" id="homeTrack">
+        {posts.map((post) => <PostCard post={post} />)}
+      </div>
+    </div>
+  </div>
+</div>
