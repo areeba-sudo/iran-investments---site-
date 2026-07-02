@@ -6,7 +6,10 @@ export interface SanityImage {
   asset: { _ref: string; _type: 'reference' };
 }
 
-export const projectId = import.meta.env.SANITY_PROJECT_ID;
+// Project ID and dataset are not secret — they appear in every public image CDN
+// URL the site serves — so we default to them directly. An env var can still
+// override (e.g. to point a staging build at a different dataset).
+export const projectId = import.meta.env.SANITY_PROJECT_ID || 'h4z2q6ep';
 export const dataset = import.meta.env.SANITY_DATASET || 'production';
 
 export const sanityClient: SanityClient = createClient({

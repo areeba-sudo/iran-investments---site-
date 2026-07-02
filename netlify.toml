@@ -1,0 +1,13 @@
+# Netlify build configuration for the Astro site.
+# The repository root IS the Astro project (site/), so no `base` is needed.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Astro 7 requires Node 22.12+.
+  NODE_VERSION = "22"
+  # Sanity project the build reads content from. Not secret — these values
+  # appear in the public image CDN URLs the site serves.
+  SANITY_PROJECT_ID = "h4z2q6ep"
+  SANITY_DATASET = "production"
