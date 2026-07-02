@@ -1,25 +1,27 @@
 ---
-import type { Post } from '../data/posts';
-import { categories, coverImage, badgeClass, postSlug } from '../data/posts';
+import type { PostSummary } from '../lib/sanity';
+import { urlFor, badgeClass } from '../lib/sanity';
+import categories from '../data/categories.json';
 
 interface Props {
-  post: Post;
+  post: PostSummary;
   grid?: boolean;
 }
 const { post, grid = false } = Astro.props;
-const dt = new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-const href = `/blog/${postSlug(post)}/`;
+const dt = new Date(post.publishedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const href = `/blog/${post.slug}/`;
+const imgSrc = urlFor(post.coverImage).width(640).auto('format').url();
 ---
-<div class={`a-card${grid ? ' gm' : ''}`} data-date={post.date} onclick={`location.href='${href}'`}>
+<div class={`a-card${grid ? ' gm' : ''}`} data-date={post.publishedDate} onclick={`location.href='${href}'`}>
   <div class="a-banner">
-    <img src={coverImage(post.id)} alt={post.title} />
-    <span class={`a-badge ${badgeClass(post.cat)}`}>{categories[post.cat].label}</span>
+    <img src={imgSrc} alt={post.title} />
+    <span class={`a-badge ${badgeClass(post.category)}`}>{categories[post.category].label}</span>
   </div>
   <div class="a-body">
     <h3>{post.title}</h3>
     <p>{post.excerpt}</p>
     <div class="a-foot">
-      <span class="a-meta">{dt} · {post.rt}</span>
+      <span class="a-meta">{dt} · {post.readTime}</span>
       <span class="a-read">Read →</span>
     </div>
   </div>

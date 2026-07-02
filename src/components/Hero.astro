@@ -1,12 +1,16 @@
 ---
-import { homepage } from '../data/homepage';
-const { hero } = homepage;
+import type { HomepageDoc } from '../lib/sanity';
+
+interface Props {
+  homepage: HomepageDoc;
+}
+const { homepage } = Astro.props;
 ---
 <section class="hero-section" id="heroSection">
   <div class="hero-text">
-    <div class="pill">{hero.pill}</div>
-    <h1 set:html={hero.headline} />
-    <p class="sub">{hero.subheadline}</p>
+    <div class="pill">{homepage.heroPill}</div>
+    <h1>{homepage.heroHeadline} <em>{homepage.heroHeadlineAccent}</em></h1>
+    <p class="sub">{homepage.heroSubheadline}</p>
     <div class="hero-btns">
       <button class="btn-primary will-mag" onclick="openModal()">Join <span id="ctrNum">0</span>+ Readers</button>
       <button class="btn-ghost will-mag" onclick="location.href='/blog/'">Explore Content ↓</button>

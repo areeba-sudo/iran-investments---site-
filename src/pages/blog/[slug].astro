@@ -1,36 +1,43 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
-import { posts, categories, coverImage, badgeClass, postSlug } from '../../data/posts';
+import { getAllPosts, getPostBySlug, urlFor, badgeClass, type PostDetail, type PostSummary } from '../../lib/sanity';
+import { bodyToHTML } from '../../lib/portableText';
+import categories from '../../data/categories.json';
 
-export function getStaticPaths() {
-  return posts.map((post) => ({
-    params: { slug: postSlug(post) },
-    props: { post },
-  }));
+export async function getStaticPaths() {
+  const summaries = await getAllPosts();
+  const details = await Promise.all(summaries.map((p) => getPostBySlug(p.slug)));
+  return details.map((post) => {
+    const more = summaries.filter((p) => p.category === post!.category && p._id !== post!._id).slice(0, 3);
+    return { params: { slug: post!.slug }, props: { post, more } };
+  });
 }
 
-const { post } = Astro.props as { post: (typeof posts)[number] };
-const m = categories[post.cat];
-const dt = new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-const more = posts.filter((p) => p.cat === post.cat && p.id !== post.id).slice(0, 3);
+const { post, more } = Astro.props as { post: PostDetail; more: PostSummary[] };
+const m = categories[post.category];
+const dt = new Date(post.publishedDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+// Original design used a darker cover overlay for two specific (visually bright) photos.
+const numericId = Number(post._id.split('-')[1]);
 const brightIds = [4, 9];
-const ovStyle = brightIds.includes(post.id)
+const ovStyle = brightIds.includes(numericId)
   ? 'background:linear-gradient(to bottom,rgba(0,0,0,.25) 0%,rgba(44,6,79,.65) 55%,rgba(20,3,35,.98) 100%)'
   : '';
+const coverUrl = urlFor(post.coverImage).width(1600).auto('format').url();
+const bodyHtml = bodyToHTML(post.body);
 ---
-<BaseLayout title={`${post.title} — Iran Investments`} description={post.excerpt}>
-  <div class="art-cover" style={`background-image:url('${coverImage(post.id)}');background-size:cover`}>
+<BaseLayout title={post.seo?.metaTitle || `${post.title} — Iran Investments`} description={post.seo?.metaDescription || post.excerpt}>
+  <div class="art-cover" style={`background-image:url('${coverUrl}');background-size:cover`}>
     <div class="art-cov-ov" style={ovStyle}></div>
     <div class="art-cov-in">
-      <span class={`a-badge ${badgeClass(post.cat)}`}>{m.label}</span>
+      <span class={`a-badge ${badgeClass(post.category)}`}>{m.label}</span>
       <h1>{post.title}</h1>
-      <div class="art-meta-line"><span>{dt}</span><span class="art-meta-dot"></span><span>{post.rt}</span></div>
+      <div class="art-meta-line"><span>{dt}</span><span class="art-meta-dot"></span><span>{post.readTime}</span></div>
     </div>
   </div>
   <div class="art-wrap">
-    <button class="art-back" onclick={`location.href='/blog/category/${post.cat}/'`}>← Back to {m.label}</button>
-    <Fragment set:html={post.body} />
+    <button class="art-back" onclick={`location.href='/blog/category/${post.category}/'`}>← Back to {m.label}</button>
+    <Fragment set:html={bodyHtml} />
   </div>
   {more.length > 0 && (
     <div class="art-more">

@@ -1,10 +1,14 @@
 ---
-import { homepage } from '../data/homepage';
-const { stats } = homepage;
+import type { HomepageDoc } from '../lib/sanity';
+
+interface Props {
+  homepage: HomepageDoc;
+}
+const { homepage } = Astro.props;
 ---
 <section class="stats-section">
   <div class="stats-grid">
-    {stats.map((s, i) => (
+    {homepage.stats.map((s, i) => (
       <div class="stat-item sr" style={i === 0 ? undefined : `transition-delay:.${i}s`}>
         <div class="stat-num-wrap"><div class="stat-num" data-target={s.target}>0</div><div class="stat-unit">{s.unit}</div></div>
         <div class="stat-label">{s.label}</div>

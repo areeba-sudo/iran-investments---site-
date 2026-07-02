@@ -1,6 +1,11 @@
 ---
-import { homepage } from '../data/homepage';
-const { why } = homepage;
+import type { HomepageDoc } from '../lib/sanity';
+
+interface Props {
+  homepage: HomepageDoc;
+}
+const { homepage } = Astro.props;
+const pillClasses = ['wi-pill-green', 'wi-pill-red', 'wi-pill-purple'];
 const icons = [
   `<svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="24" cy="24" r="13" stroke="#bdd5a6" stroke-width="1.5"/>
@@ -31,18 +36,18 @@ const icons = [
   <div id="why3d"></div>
   <div class="why-inner">
     <div class="why-header sr">
-      <div class="section-tag">{why.tag}</div>
-      <h2 set:html={why.heading} />
-      <p>{why.body}</p>
+      <div class="section-tag">{homepage.whyTag}</div>
+      <h2>{homepage.whyHeading}</h2>
+      <p>{homepage.whyBody}</p>
     </div>
     <div class="why-list">
-      {why.items.map((item, i) => (
+      {homepage.whyItems.map((item, i) => (
         <div class="why-item sr" style={`transition-delay:.${i + 1}s`}>
           <div class="wi-num">{String(i + 1).padStart(2, '0')}</div>
           <div class="wi-vline"></div>
           <div class="wi-icon" set:html={icons[i]} />
           <div class="wi-body"><h3>{item.title}</h3><p>{item.body}</p></div>
-          <div class={`wi-pill ${item.pillClass}`}>{item.pillLabel}</div>
+          <div class={`wi-pill ${pillClasses[i]}`}>{item.pillLabel}</div>
         </div>
       ))}
     </div>

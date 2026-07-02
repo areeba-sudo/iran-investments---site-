@@ -1,20 +1,21 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PostCard from '../../../components/PostCard.astro';
-import { categories, getPostsByCategory } from '../../../data/posts';
+import { getPostsByCategory, type Category } from '../../../lib/sanity';
+import categories from '../../../data/categories.json';
 
 export function getStaticPaths() {
-  return ['investment', 'hidden', 'strategy'].map((category) => ({ params: { category } }));
+  return (['investment', 'hidden', 'strategy'] as Category[]).map((category) => ({ params: { category } }));
 }
 
-const { category } = Astro.params as { category: 'investment' | 'hidden' | 'strategy' };
+const { category } = Astro.params as { category: Category };
 const m = categories[category];
 const bgM: Record<string, string> = {
   investment: 'background:rgba(189,213,166,.3);color:var(--gdk)',
   hidden: 'background:rgba(235,94,62,.12);color:var(--red2)',
   strategy: 'background:rgba(44,6,79,.08);color:var(--text)',
 };
-const sorted = getPostsByCategory(category).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+const sorted = await getPostsByCategory(category);
 ---
 <BaseLayout title={`${m.label} — Iran Investments`} description={m.desc}>
   <div class="cat-hero">
