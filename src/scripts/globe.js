@@ -77,14 +77,13 @@ export function initHero3D(){
   // Start with Iran facing camera
   grp.rotation.y = -(53+180)*Math.PI/180;
 
-  // Popup
+  // Popup — 3 export facts that cycle, one per appearance of Iran.
+  // The label shows a fact while Iran faces the camera and hides when it
+  // rotates out of view; the next appearance advances to the next fact.
   const messages = [
-    "Iran",
-    "Iran — the land of missed opportunities",
-    "Iran — $1.7T economy, largely untapped",
-    "Iran — crossroads of East and West",
-    "Iran — 86M consumers, waiting",
-    "Iran — where Silk Roads once crossed",
+    "World's #1 saffron supplier",
+    "2nd-largest natural gas reserves",
+    "Top-5 pistachio & date exporter",
   ];
   let msgIdx=0, iranVisible=false;
   const iranCenter3D = ll2v(32,53,R*1.1);
