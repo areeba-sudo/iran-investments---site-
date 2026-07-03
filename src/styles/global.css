@@ -353,8 +353,11 @@ footer ul{list-style:none}footer ul li{margin-bottom:9px}footer ul li a{color:rg
   .hero-section{display:flex;flex-direction:column;padding:32px 16px;gap:22px;min-height:auto}
   .hero-text h1{font-size:30px;max-width:100%;line-height:1.12}
   .hero-text .sub{font-size:14px;max-width:100%}
-  .hero-right{position:static;width:100%;order:2;display:flex;justify-content:center}
-  #hero3dCanvas{height:260px!important;width:100%!important;max-width:300px;border-radius:50%!important}
+  .hero-right{position:relative;width:100%;max-width:300px;margin:0 auto;order:2}
+  #hero3dCanvas{height:300px!important;width:100%!important;border-radius:50%!important}
+  /* Re-enable the rotating "Iran" label now that the globe is a proper size again */
+  #globePopup{display:block!important;min-width:140px!important;max-width:210px!important;padding:9px 13px!important}
+  #globePopupText{font-size:12px!important}
 
   /* Card sliders: one card fills most of the screen, next peeks in — swipeable */
   .sl-track{gap:14px}
