@@ -1,0 +1,26 @@
+---
+// The green "Weekly insights, delivered." email-capture strip.
+// Used on the homepage and at the foot of article/section pages.
+import { getSiteSettings } from '../lib/sanity';
+
+const settings = await getSiteSettings();
+const heading = settings?.subscribeHeading || 'Weekly insights, delivered.';
+const subheading =
+  settings?.subscribeSubheading || 'Join investors and executives who read Iran Investment every week.';
+const disclaimer = settings?.subscribeDisclaimer || 'No spam. Unsubscribe anytime.';
+---
+<section data-screen-label="Subscribe strip" style="background:#0B3B36;position:relative;overflow:hidden;">
+  <div class="ii-substrip" style="max-width:1280px;margin:0 auto;padding:48px 40px;display:flex;align-items:center;justify-content:space-between;gap:56px;flex-wrap:wrap;position:relative;">
+    <div style="max-width:440px;">
+      <div style="font-family:'Playfair Display',serif;font-weight:600;font-size:28px;color:#F7F3EA;line-height:1.12;">{heading}</div>
+      <div style="font-size:14px;color:rgba(247,243,234,.6);margin-top:9px;">{subheading}</div>
+    </div>
+    <form id="ii-sub-form" style="flex:1;min-width:340px;max-width:480px;">
+      <div class="ii-sleek" id="ii-sleek-wrap">
+        <input id="ii-sub-input" type="email" placeholder="Enter your email address" />
+        <button type="submit"><span id="ii-sub-label">Subscribe</span><svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M0 5h14M10 1l4 4-4 4" stroke="#D9BE84" stroke-width="1.5"></path></svg></button>
+      </div>
+      <div style="font-size:11px;color:rgba(247,243,234,.4);margin-top:11px;letter-spacing:.02em;">{disclaimer}</div>
+    </form>
+  </div>
+</section>

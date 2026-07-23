@@ -1,0 +1,31 @@
+---
+// Magazine-style article card for listing grids.
+import { urlFor, type PostSummary } from '../lib/sanity';
+
+interface Props {
+  post: PostSummary;
+  eager?: boolean;
+}
+const { post, eager = false } = Astro.props;
+const img = post.coverImage ? urlFor(post.coverImage).width(760).height(480).auto('format').url() : '';
+const dt = new Date(post.publishedDate).toLocaleDateString('en-GB', {
+  day: '2-digit',
+  month: 'short',
+  year: 'numeric',
+});
+---
+<a href={`/blog/${post.slug}/`} class="ii-lift" data-topic={post.topic?.slug || ''} style="display:flex;flex-direction:column;background:#FBF9F3;border:1px solid #E4DCC8;border-radius:3px;overflow:hidden;text-decoration:none;">
+  <div style="aspect-ratio:19/12;overflow:hidden;background:#0B3B36;">
+    {img && <img src={img} alt={post.title} loading={eager ? 'eager' : 'lazy'} style="width:100%;height:100%;object-fit:cover;filter:saturate(.85);" />}
+  </div>
+  <div style="padding:24px 24px 26px;display:flex;flex-direction:column;gap:11px;flex:1;">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#B8923D;">{post.section?.title || 'Analysis'}</div>
+    <h3 style="font-family:'Playfair Display',serif;font-weight:600;font-size:20px;line-height:1.26;color:#1C1C1A;">{post.title}</h3>
+    <p style="font-size:13.5px;line-height:1.6;color:#5B584F;flex:1;">{post.excerpt}</p>
+    <div style="display:flex;align-items:center;gap:9px;font-size:11px;font-weight:500;letter-spacing:.04em;color:#5B584F;">
+      <span>{dt}</span>
+      {post.readTime && <span style="width:3px;height:3px;border-radius:50%;background:#B8923D;"></span>}
+      {post.readTime && <span>{post.readTime}</span>}
+    </div>
+  </div>
+</a>

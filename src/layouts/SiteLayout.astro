@@ -1,0 +1,435 @@
+---
+// Magazine layout — the site-wide shell (masthead + footer + liquid-glass modal).
+// Content is design-verbatim (per client) while the new sitemap is being defined;
+// CMS wiring returns once the new pages/content exist.
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+const path = Astro.url.pathname;
+const isHome = path === '/';
+const isResources = path.startsWith('/guides') || path.startsWith('/whitepapers');
+const isWeekly = path.startsWith('/weekly-insights');
+const isAbout = path.startsWith('/about');
+const isContact = path.startsWith('/contact');
+const isSec = (slug: string) => path === `/section/${slug}/` || path === `/section/${slug}`;
+const navLink = (active: boolean) =>
+  `font-size:11.5px;font-weight:${active ? 600 : 500};letter-spacing:.13em;text-transform:uppercase;color:${active ? '#0B3B36' : '#5B584F'};text-decoration:none;padding:14px 0;border-bottom:2px solid ${active ? '#B8923D' : 'transparent'};white-space:nowrap;`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <slot name="head" />
+  </head>
+  <body>
+    <!-- MASTHEAD -->
+    <header
+      data-screen-label="Masthead"
+      style="position:sticky;top:0;z-index:120;background:rgba(247,243,234,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #E4DCC8;"
+    >
+      <div class="ii-masthead-inner" style="max-width:1280px;margin:0 auto;padding:0 40px;height:82px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;">
+        <div class="ii-masthead-left" style="display:flex;align-items:center;gap:26px;">
+          <button aria-label="Menu" class="ii-menu-btn" style="display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;color:#1C1C1A;font-family:'Inter';font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:0;">
+            <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><path d="M0 1h18M0 6h18M0 11h12" stroke="#1C1C1A" stroke-width="1.4"></path></svg>
+            <span class="ii-btn-label">Menu</span>
+          </button>
+          <button aria-label="Search" id="ii-search-btn" style="display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;color:#5B584F;font-family:'Inter';font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:0;">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.4" cy="6.4" r="5.4" stroke="#5B584F" stroke-width="1.3"></circle><path d="M10.6 10.6 14 14" stroke="#5B584F" stroke-width="1.3"></path></svg>
+            <span class="ii-btn-label">Search</span>
+          </button>
+        </div>
+        <a href="/" class="ii-wordmark" style="text-align:center;text-decoration:none;">
+          <div class="ii-wordmark-title" style="font-family:'Playfair Display',serif;font-weight:700;font-size:25px;letter-spacing:.16em;color:#0B3B36;line-height:1;">IRAN&nbsp;INVESTMENT</div>
+          <div class="ii-wordmark-sub" style="margin-top:7px;font-size:9.5px;font-weight:600;letter-spacing:.32em;color:#B8923D;">ECONOMICS · MARKETS · OPPORTUNITIES</div>
+        </a>
+        <div class="ii-masthead-right" style="display:flex;align-items:center;justify-content:flex-end;gap:22px;">
+          <button class="ii-open-modal" data-modal="subscribe" style="background:#B8923D;color:#1C1C1A;border:none;cursor:pointer;font-family:'Inter';font-weight:700;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;padding:11px 22px;border-radius:2px;transition:background .25s;" onmouseover="this.style.background='#a17f31'" onmouseout="this.style.background='#B8923D'">Subscribe</button>
+        </div>
+      </div>
+      <nav style="border-top:1px solid #EFE8D6;">
+        <div class="ii-navrow" style="max-width:1280px;margin:0 auto;padding:0 40px;height:46px;display:flex;align-items:center;gap:30px;">
+          <a href="/" class="ii-nav" style={`position:relative;${navLink(isHome)}`}>Home</a>
+          <a href="/section/economy/" class="ii-nav" style={navLink(isSec('economy'))}>Economy</a>
+          <a href="/section/markets/" class="ii-nav" style={navLink(isSec('markets'))}>Markets</a>
+          <a href="/section/sectors/" class="ii-nav" style={navLink(isSec('sectors'))}>Sectors</a>
+          <a href="/section/policy/" class="ii-nav" style={navLink(isSec('policy'))}>Policy</a>
+          <a href="/section/analysis/" class="ii-nav" style={navLink(isSec('analysis'))}>Analysis</a>
+          <a href="/weekly-insights/" class="ii-nav" style={navLink(isWeekly)}>Weekly Insights</a>
+          <div class="ii-navdd">
+            <button type="button" class="ii-nav ii-navdd-trigger" aria-haspopup="true" aria-expanded="false" style={`background:none;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:'Inter';${navLink(isResources)}`}>Resources
+              <svg width="9" height="6" viewBox="0 0 9 6" fill="none" style="transition:transform .25s;"><path d="M1 1l3.5 3.5L8 1" stroke="currentColor" stroke-width="1.3"></path></svg>
+            </button>
+            <div class="ii-navdd-menu" role="menu">
+              <a href="/whitepapers/" role="menuitem">White Papers</a>
+              <a href="/guides/" role="menuitem">Guides</a>
+            </div>
+          </div>
+          <a href="/about/" class="ii-nav" style={navLink(isAbout)}>About</a>
+          <a href="/contact/" class="ii-nav" style={navLink(isContact)}>Contact</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- MENU DRAWER -->
+    <div id="ii-drawer" class="ii-drawer" aria-hidden="true">
+      <div class="ii-drawer-scrim" data-drawer-close></div>
+      <aside class="ii-drawer-panel" role="dialog" aria-label="Menu">
+        <div class="ii-drawer-head">
+          <span class="ii-drawer-brand">Menu</span>
+          <button class="ii-drawer-x" data-drawer-close aria-label="Close menu"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 1l11 11M12 1L1 12" stroke="#F7F3EA" stroke-width="1.5"></path></svg></button>
+        </div>
+        <nav class="ii-drawer-nav">
+          <a href="/">Home</a>
+          <a href="/weekly-insights/">Weekly Insights</a>
+          <div class="ii-drawer-label">Sections</div>
+          <a href="/section/economy/">Economy</a>
+          <a href="/section/markets/">Markets</a>
+          <a href="/section/sectors/">Sectors</a>
+          <a href="/section/policy/">Policy</a>
+          <a href="/section/analysis/">Analysis</a>
+          <div class="ii-drawer-label">Resources</div>
+          <a href="/whitepapers/">White Papers</a>
+          <a href="/guides/">Guides</a>
+          <div class="ii-drawer-label">Company</div>
+          <a href="/about/">About</a>
+          <a href="/contact/">Contact</a>
+        </nav>
+        <button class="ii-drawer-cta ii-open-modal" data-modal="subscribe">Subscribe to the newsletter</button>
+      </aside>
+    </div>
+
+    <!-- SEARCH OVERLAY -->
+    <div id="ii-search" class="ii-search" aria-hidden="true">
+      <div class="ii-search-scrim" data-search-close></div>
+      <div class="ii-search-panel" role="dialog" aria-label="Search">
+        <div class="ii-search-bar">
+          <svg width="20" height="20" viewBox="0 0 15 15" fill="none"><circle cx="6.4" cy="6.4" r="5.4" stroke="#0B3B36" stroke-width="1.3"></circle><path d="M10.6 10.6 14 14" stroke="#0B3B36" stroke-width="1.3"></path></svg>
+          <input id="ii-search-input" type="search" placeholder="Search articles…" autocomplete="off" spellcheck="false" />
+          <button class="ii-search-x" data-search-close aria-label="Close search">Esc</button>
+        </div>
+        <div id="ii-search-results" class="ii-search-results"></div>
+      </div>
+    </div>
+
+    <slot />
+
+    <!-- FOOTER -->
+    <footer data-screen-label="Footer" style="background:#0B3B36;position:relative;overflow:hidden;">
+      <div style="max-width:1280px;margin:0 auto;padding:64px 40px 30px;position:relative;">
+        <div class="ii-foot-grid" style="display:grid;grid-template-columns:1.7fr 1fr 1fr 1fr;gap:48px;padding-bottom:44px;border-bottom:1px solid rgba(217,190,132,.18);">
+          <div>
+            <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:21px;letter-spacing:.12em;color:#F7F3EA;">IRAN INVESTMENT</div>
+            <div style="margin-top:8px;font-size:9px;font-weight:600;letter-spacing:.28em;color:#B8923D;">ECONOMICS · MARKETS · OPPORTUNITIES</div>
+            <p style="margin-top:22px;font-size:13px;line-height:1.7;color:rgba(247,243,234,.5);max-width:300px;">Institutional-grade editorial intelligence on Iran's economy, markets, and the opportunities inside them.</p>
+          </div>
+          <div>
+            <h4 style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#D9BE84;margin-bottom:18px;">Resources</h4>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:11px;">
+              <li><a href="/whitepapers/" class="ii-foot" style="font-size:13px;color:rgba(247,243,234,.6);text-decoration:none;">White Papers</a></li>
+              <li><a href="/guides/" class="ii-foot" style="font-size:13px;color:rgba(247,243,234,.6);text-decoration:none;">Guides</a></li>
+              <li><a href="#" onclick="return false;" class="ii-foot ii-open-modal" data-modal="subscribe" style="font-size:13px;color:rgba(247,243,234,.6);text-decoration:none;cursor:pointer;">Newsletter</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#D9BE84;margin-bottom:18px;">Company</h4>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:11px;">
+              <li><a href="/about/" class="ii-foot" style="font-size:13px;color:rgba(247,243,234,.6);text-decoration:none;">About</a></li>
+              <li><a href="/contact/" class="ii-foot" style="font-size:13px;color:rgba(247,243,234,.6);text-decoration:none;">Contact</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#D9BE84;margin-bottom:18px;">Legal</h4>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:11px;">
+              <li><a href="#" class="ii-foot" style="font-size:13px;color:rgba(247,243,234,.6);text-decoration:none;">Privacy</a></li>
+              <li><a href="#" class="ii-foot" style="font-size:13px;color:rgba(247,243,234,.6);text-decoration:none;">Terms</a></li>
+              <li><a href="#" class="ii-foot" style="font-size:13px;color:rgba(247,243,234,.6);text-decoration:none;">Disclosures</a></li>
+            </ul>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:24px;flex-wrap:wrap;gap:16px;">
+          <span style="font-size:12px;color:rgba(247,243,234,.35);">© 2026 Iran Investment. All rights reserved.</span>
+          <div style="display:flex;gap:12px;">
+            <a href="#" aria-label="X" style="width:34px;height:34px;border:1px solid rgba(217,190,132,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 1l11 11M12 1L1 12" stroke="#D9BE84" stroke-width="1.3"></path></svg></a>
+            <a href="#" aria-label="LinkedIn" style="width:34px;height:34px;border:1px solid rgba(217,190,132,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="4.5" width="2.4" height="8.5" fill="#D9BE84"></rect><circle cx="2.2" cy="1.6" r="1.4" fill="#D9BE84"></circle><path d="M6 13V4.5h2.3v1.2c.4-.8 1.4-1.4 2.5-1.4 1.8 0 2.6 1.1 2.6 3.2V13H11V8c0-1-.4-1.7-1.3-1.7S8.3 7 8.3 8v5z" fill="#D9BE84"></path></svg></a>
+            <a href="#" onclick="return false;" aria-label="Newsletter" class="ii-open-modal" data-modal="subscribe" style="width:34px;height:34px;border:1px solid rgba(217,190,132,.4);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="12" viewBox="0 0 15 12" fill="none"><rect x="1" y="1" width="13" height="10" rx="1" stroke="#D9BE84" stroke-width="1.1"></rect><path d="M1.5 1.5L7.5 6l6-4.5" stroke="#D9BE84" stroke-width="1.1"></path></svg></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- LIQUID GLASS POPUP -->
+    <div id="ii-modal" role="dialog" aria-modal="true">
+      <div id="ii-modal-scrim" data-close="1"></div>
+      <div class="ii-pop" id="ii-pop">
+        <div class="ii-pop-glow" aria-hidden="true"></div>
+        <div class="ii-pop-arc" aria-hidden="true"></div>
+        <button class="ii-pop-close" data-close="1" aria-label="Close"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="#F7F3EA" stroke-width="1.5"></path></svg></button>
+
+        <div class="ii-pop-body" id="ii-modal-form-wrap">
+          <span class="ii-pop-rule" aria-hidden="true"></span>
+          <h3 id="ii-modal-title" class="ii-pop-title">There's an opportunity behind chaos</h3>
+          <p id="ii-modal-sub" class="ii-pop-sub">Enter your email and we'll deliver the Legal Structuring Handbook to your inbox in seconds.</p>
+          <form id="ii-modal-form">
+            <div class="ii-pop-field">
+              <input id="ii-modal-email" type="email" placeholder="you@company.com" required />
+              <button class="ii-pop-arrow" type="submit" aria-label="Send"><svg width="20" height="12" viewBox="0 0 20 12" fill="none"><path d="M0 6h17M13 1l5 5-5 5" stroke="#0B3B36" stroke-width="1.7"></path></svg></button>
+            </div>
+            <button id="ii-modal-submit" type="submit" class="ii-pop-cta">Send me the guide</button>
+          </form>
+          <div class="ii-pop-fine">We respect your privacy. No spam, ever.</div>
+        </div>
+
+        <div id="ii-modal-success" class="ii-pop-success">
+          <div class="ii-pop-check">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M6 13.5l4.5 4.5L20 8" stroke="#0B3B36" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+          <h3 id="ii-modal-success-title" class="ii-pop-title" style="text-align:center;">On its way.</h3>
+          <p id="ii-modal-success-sub" class="ii-pop-sub" style="text-align:center;margin-bottom:0;">Your Legal Structuring Handbook is on its way to <span id="ii-modal-sent-to" style="color:#D9BE84;font-weight:600;"></span>.</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      import { initSite } from '../scripts/site.js';
+      document.addEventListener('DOMContentLoaded', initSite);
+    </script>
+
+    <style is:global>
+      *{margin:0;padding:0;box-sizing:border-box}
+      html,body{background:#F7F3EA}
+      body{font-family:'Inter',system-ui,sans-serif;color:#1C1C1A;-webkit-font-smoothing:antialiased}
+      ::selection{background:#0B3B36;color:#F7F3EA}
+      input:focus{outline:none}
+      a{color:#0B3B36;text-decoration:none}
+      a:hover{color:#B8923D}
+      @keyframes ii_scrollCue{0%{transform:translateY(0);opacity:.9}50%{transform:translateY(8px);opacity:.35}100%{transform:translateY(0);opacity:.9}}
+      @keyframes ii_popIn{0%{opacity:0;transform:translateY(24px) scale(.96)}100%{opacity:1;transform:translateY(0) scale(1)}}
+      @keyframes ii_liquidA{0%{transform:translate(-14%,-10%) rotate(0deg) scale(1.15)}33%{transform:translate(12%,4%) rotate(45deg) scale(1.35)}66%{transform:translate(-4%,12%) rotate(-32deg) scale(1.2)}100%{transform:translate(-14%,-10%) rotate(0deg) scale(1.15)}}
+      @keyframes ii_liquidB{0%{transform:translate(14%,10%) rotate(0deg) scale(1.25)}50%{transform:translate(-14%,-8%) rotate(-55deg) scale(1.45)}100%{transform:translate(14%,10%) rotate(0deg) scale(1.25)}}
+      @keyframes ii_liquidC{0%{transform:translate(6%,-12%) rotate(0deg) scale(1.1)}50%{transform:translate(-10%,10%) rotate(60deg) scale(1.3)}100%{transform:translate(6%,-12%) rotate(0deg) scale(1.1)}}
+      @keyframes ii_sheenRot{to{transform:rotate(360deg)}}
+      @keyframes ii_sheen{0%{transform:translateX(-120%) skewX(-18deg)}100%{transform:translateX(220%) skewX(-18deg)}}
+      .ii-lift{transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s cubic-bezier(.22,1,.36,1),border-color .35s}
+      .ii-lift:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(11,59,54,.1);border-color:#B8923D}
+      .ii-nav:hover{color:#0B3B36 !important;border-bottom-color:#D9BE84 !important}
+      /* ---- resources dropdown (menu is portaled to <body> by site.js) ---- */
+      .ii-navdd{position:relative;}
+      .ii-navdd-menu{position:fixed;min-width:190px;background:#F7F3EA;border:1px solid #E4DCC8;border-radius:5px;box-shadow:0 20px 44px rgba(11,59,54,.16);padding:8px;opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .2s ease,transform .2s ease,visibility .2s;z-index:1500;}
+      .ii-navdd-menu.open{opacity:1;visibility:visible;transform:translateY(0);}
+      .ii-navdd.open .ii-navdd-trigger svg{transform:rotate(180deg);}
+      .ii-navdd-menu a{display:block;padding:11px 14px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#5B584F;border-radius:3px;text-decoration:none;white-space:nowrap;transition:background .2s,color .2s;}
+      .ii-navdd-menu a:hover{background:#EFE8D6;color:#0B3B36;}
+      /* ---- menu drawer ---- */
+      .ii-drawer{position:fixed;inset:0;z-index:1600;visibility:hidden;}
+      .ii-drawer.open{visibility:visible;}
+      .ii-drawer-scrim{position:absolute;inset:0;background:rgba(6,26,24,.5);opacity:0;transition:opacity .35s ease;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
+      .ii-drawer.open .ii-drawer-scrim{opacity:1;}
+      .ii-drawer-panel{position:absolute;top:0;left:0;bottom:0;width:min(380px,86vw);background:linear-gradient(162deg,#0C443D,#0A322D);padding:26px 32px 30px;display:flex;flex-direction:column;overflow-y:auto;transform:translateX(-100%);transition:transform .42s cubic-bezier(.4,0,.1,1);box-shadow:30px 0 80px rgba(4,20,18,.5);}
+      .ii-drawer.open .ii-drawer-panel{transform:none;}
+      .ii-drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;}
+      .ii-drawer-brand{font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#D9BE84;}
+      .ii-drawer-x{width:34px;height:34px;border-radius:50%;border:1px solid rgba(247,243,234,.24);background:rgba(247,243,234,.05);color:#F7F3EA;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .25s;}
+      .ii-drawer-x:hover{background:rgba(247,243,234,.16);}
+      .ii-drawer-nav{display:flex;flex-direction:column;flex:1;}
+      .ii-drawer-nav a{font-family:'Playfair Display',serif;font-size:23px;font-weight:600;color:#F7F3EA;text-decoration:none;padding:8px 0;transition:color .2s,padding-left .2s;}
+      .ii-drawer-nav a:hover{color:#D9BE84;padding-left:6px;}
+      .ii-drawer-label{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(217,190,132,.65);margin:20px 0 6px;}
+      .ii-drawer-cta{margin-top:26px;background:#D9BE84;color:#0B3B36;border:none;border-radius:4px;padding:15px;font-family:'Inter';font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .25s;}
+      .ii-drawer-cta:hover{background:#e6cd97;}
+      /* ---- search overlay ---- */
+      .ii-search{position:fixed;inset:0;z-index:1600;visibility:hidden;}
+      .ii-search.open{visibility:visible;}
+      .ii-search-scrim{position:absolute;inset:0;background:rgba(6,26,24,.55);opacity:0;transition:opacity .35s ease;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
+      .ii-search.open .ii-search-scrim{opacity:1;}
+      .ii-search-panel{position:absolute;top:0;left:0;right:0;background:#F7F3EA;border-bottom:1px solid #E4DCC8;padding:26px 40px 26px;max-height:84vh;overflow-y:auto;transform:translateY(-100%);transition:transform .42s cubic-bezier(.4,0,.1,1);box-shadow:0 30px 60px rgba(11,59,54,.2);}
+      .ii-search.open .ii-search-panel{transform:none;}
+      .ii-search-bar{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:14px;border-bottom:2px solid #0B3B36;padding-bottom:12px;}
+      .ii-search-bar input{flex:1;border:none;background:none;font-family:'Playfair Display',serif;font-size:25px;color:#0B3B36;}
+      .ii-search-bar input:focus{outline:none;}
+      .ii-search-bar input::placeholder{color:#a49d8a;}
+      .ii-search-x{border:1px solid #C9BF9F;background:none;color:#5B584F;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.1em;padding:5px 9px;cursor:pointer;flex-shrink:0;}
+      .ii-search-results{max-width:900px;margin:8px auto 0;display:flex;flex-direction:column;}
+      .ii-search-result{display:block;padding:16px 2px;border-bottom:1px solid #E4DCC8;text-decoration:none;transition:padding-left .2s;}
+      .ii-search-result:hover{padding-left:6px;}
+      .ii-search-result .sec{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#B8923D;}
+      .ii-search-result h4{font-family:'Playfair Display',serif;font-weight:600;font-size:19px;color:#1C1C1A;margin:5px 0 4px;}
+      .ii-search-result p{font-size:13px;line-height:1.5;color:#5B584F;}
+      .ii-search-empty{max-width:900px;margin:0 auto;color:#5B584F;font-size:14px;padding:22px 2px;}
+      /* ---- weekly carousel (homepage column + weekly-insights hero) ---- */
+      .ii-wc{position:relative;}
+      .ii-wc-track{display:grid;}
+      .ii-wc-slide{grid-area:1/1;opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease,visibility .5s;pointer-events:none;}
+      .ii-wc-slide.on{opacity:1;visibility:visible;transform:none;pointer-events:auto;}
+      .ii-wc-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:70px;align-items:center;}
+      .ii-wc-cover{position:relative;display:block;aspect-ratio:4/5;border-radius:4px;overflow:hidden;background:#0B3B36;box-shadow:0 26px 60px rgba(11,59,54,.22);}
+      .ii-wc-cover img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;}
+      .ii-wc-cover:hover img{transform:scale(1.03);}
+      .ii-wc-badge{position:absolute;bottom:22px;left:-22px;background:#0B3B36;color:#D9BE84;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:12px 18px;}
+      .ii-wc-controls{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:34px;}
+      .ii-wc-dots{display:flex;align-items:center;gap:10px;}
+      .ii-wc-dot{width:30px;height:3px;border:none;padding:0;border-radius:2px;background:#D8CEB4;cursor:pointer;transition:background .3s;}
+      .ii-wc-dot.on{background:#B8923D;}
+      .ii-wc-arrows{display:flex;align-items:center;gap:10px;}
+      .ii-wc-arrow{width:44px;height:44px;border-radius:50%;border:1px solid #C9BF9F;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .25s,border-color .25s;}
+      .ii-wc-arrow:hover{background:#0B3B36;border-color:#0B3B36;}
+      .ii-wc-arrow:hover svg path{stroke:#F7F3EA;}
+      /* pine-hero variant (weekly-insights page) */
+      .ii-weh .ii-wc-dot{background:rgba(217,190,132,.38);}
+      .ii-weh .ii-wc-dot.on{background:#D9BE84;}
+      .ii-weh .ii-wc-arrow{border-color:rgba(217,190,132,.5);}
+      .ii-weh .ii-wc-arrow svg path{stroke:#D9BE84;}
+      .ii-weh .ii-wc-arrow:hover{background:#D9BE84;border-color:#D9BE84;}
+      .ii-weh .ii-wc-arrow:hover svg path{stroke:#0B3B36;}
+      @media(max-width:860px){
+        .ii-wc-grid{grid-template-columns:1fr;gap:30px;}
+        .ii-wc-cover{max-width:340px;}
+        .ii-wc-badge{left:0;}
+        .ii-wc-grid h2{font-size:30px !important;}
+      }
+      /* ---- shared inner-page wide banner (articles + weekly editions) ---- */
+      .ii-web{width:100%;height:clamp(300px,46vh,520px);overflow:hidden;background:#EDE7D7;}
+      .ii-web img{width:100%;height:100%;object-fit:cover;object-position:center 60%;display:block;}
+      @media(max-width:680px){.ii-web{height:260px;}}
+      .ii-viewall:hover{gap:15px !important}
+      .ii-foot:hover{color:#D9BE84 !important}
+      /* ---- hero carousel ---- */
+      .ii-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.1s cubic-bezier(.4,0,.2,1);pointer-events:none;}
+      .ii-slide.on{opacity:1;pointer-events:auto;}
+      .ii-slide-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.08);transition:transform 8s ease;}
+      .ii-slide.on .ii-slide-img{transform:scale(1);}
+      .ii-slide-copy{opacity:0;transform:translateY(22px);transition:opacity .9s cubic-bezier(.22,1,.36,1) .25s,transform .9s cubic-bezier(.22,1,.36,1) .25s;}
+      .ii-slide.on .ii-slide-copy{opacity:1;transform:translateY(0);}
+      .ii-dot{position:relative;width:44px;height:3px;background:rgba(247,243,234,.28);border:none;padding:0;cursor:pointer;overflow:hidden;border-radius:2px;}
+      .ii-dot span{position:absolute;inset:0;width:0;background:#D9BE84;border-radius:2px;}
+      .ii-dot.on span{width:100%;}
+      .ii-cbtn{width:46px;height:46px;border:1px solid rgba(217,190,132,.5);background:rgba(11,59,54,.28);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .3s,border-color .3s,transform .3s;}
+      .ii-cbtn:hover{background:#B8923D;border-color:#B8923D;transform:scale(1.06);}
+      .ii-cbtn:hover svg path{stroke:#0B3B36;}
+      .ii-herocta{display:inline-flex;align-items:center;gap:11px;background:#B8923D;color:#1C1C1A;border:none;cursor:pointer;text-decoration:none;font-family:'Inter';font-weight:700;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;padding:15px 28px;border-radius:2px;transition:gap .25s,background .25s;}
+      .ii-herocta:hover{gap:16px;background:#c79f42;}
+      /* ---- sector cards ---- */
+      .ii-scard{position:relative;overflow:hidden;min-height:410px;display:flex;flex-direction:column;justify-content:flex-end;background:#0B3B36;border:1px solid rgba(247,243,234,.14);border-radius:3px;cursor:pointer;transition:transform .5s cubic-bezier(.22,1,.36,1),box-shadow .5s cubic-bezier(.22,1,.36,1),border-color .5s;}
+      .ii-scard:hover,.ii-scard.on{transform:translateY(-4px);box-shadow:0 24px 54px rgba(11,59,54,.3);border-color:#D9BE84;}
+      .ii-scard-bw{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:grayscale(1) contrast(1.05) brightness(.9);transform:scale(1.02);transition:transform 7s ease;}
+      .ii-scard:hover .ii-scard-bw,.ii-scard.on .ii-scard-bw{transform:scale(1.09);}
+      .ii-scard-basetint{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(6,26,24,.12) 0%,rgba(6,26,24,.5) 56%,rgba(5,22,20,.9) 100%);}
+      .ii-scard-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;z-index:2;transform:scale(1.12);transition:opacity .6s ease,transform 6.5s ease;}
+      .ii-scard:hover .ii-scard-img,.ii-scard.on .ii-scard-img{opacity:1;transform:scale(1);}
+      .ii-scard-tint{position:absolute;inset:0;z-index:3;opacity:0;transition:opacity .6s ease;background:linear-gradient(180deg,rgba(11,59,54,.18) 0%,rgba(11,59,54,.72) 52%,rgba(11,59,54,.96) 100%);pointer-events:none;}
+      .ii-scard:hover .ii-scard-tint,.ii-scard.on .ii-scard-tint{opacity:1;}
+      .ii-scard-body{position:relative;z-index:4;padding:32px 28px 30px;display:flex;flex-direction:column;height:100%;justify-content:space-between;}
+      .ii-scard-num{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:#D9BE84;letter-spacing:.05em;}
+      .ii-badge{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;background:rgba(247,243,234,.1);border:1px solid rgba(247,243,234,.5);transition:background .5s,border-color .5s,transform .5s;}
+      .ii-scard:hover .ii-badge,.ii-scard.on .ii-badge{background:rgba(217,190,132,.18);border-color:#D9BE84;transform:rotate(-6deg);}
+      .ii-badge svg path,.ii-badge svg circle{stroke:#F7F3EA;transition:stroke .5s;}
+      .ii-scard-title{font-family:'Playfair Display',serif;font-weight:700;font-size:20px;line-height:1.2;color:#F7F3EA;margin-bottom:9px;text-shadow:0 1px 12px rgba(6,24,22,.5);}
+      .ii-scard-desc{font-size:13px;line-height:1.6;color:rgba(247,243,234,.85);text-shadow:0 1px 10px rgba(6,24,22,.45);}
+      .ii-scard-cta{display:inline-flex;align-items:center;gap:9px;align-self:flex-start;margin-top:0;max-height:0;opacity:0;overflow:hidden;border:1.5px solid #D9BE84;color:#F7F3EA;background:transparent;font-family:'Inter';font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:0 20px;border-radius:2px;text-decoration:none;transition:max-height .5s cubic-bezier(.22,1,.36,1),opacity .45s ease,margin-top .5s cubic-bezier(.22,1,.36,1),background .3s,color .3s,gap .25s;}
+      .ii-scard:hover .ii-scard-cta,.ii-scard.on .ii-scard-cta{max-height:52px;opacity:1;margin-top:20px;padding:12px 20px;}
+      .ii-scard-cta:hover{background:#D9BE84;color:#0B3B36;gap:14px;}
+      .ii-scard-cta:hover svg path{stroke:#0B3B36;}
+      /* ---- premium callout ---- */
+      .ii-getbtn{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:12px;background:#D9BE84;color:#0B3B36;border:none;cursor:pointer;font-family:'Inter';font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;padding:17px 34px;border-radius:3px;transition:transform .3s,box-shadow .3s;}
+      .ii-getbtn:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(217,190,132,.4);}
+      .ii-getbtn .sheen{position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);}
+      .ii-getbtn:hover .sheen{animation:ii_sheen 1s ease;}
+      /* ---- sleek underline subscribe ---- */
+      .ii-sleek{position:relative;display:flex;align-items:center;border-bottom:1.5px solid rgba(217,190,132,.45);transition:border-color .35s;min-width:340px;}
+      .ii-sleek:focus-within{border-bottom-color:#D9BE84;}
+      .ii-sleek input{flex:1;background:transparent;border:none;padding:14px 4px;font-family:'Inter';font-size:15px;color:#F7F3EA;}
+      .ii-sleek input::placeholder{color:rgba(247,243,234,.5);}
+      .ii-sleek button{display:flex;align-items:center;gap:9px;background:none;border:none;cursor:pointer;color:#D9BE84;font-family:'Inter';font-weight:700;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;padding:8px 2px 8px 14px;white-space:nowrap;transition:gap .25s,color .25s;}
+      .ii-sleek button:hover{gap:14px;color:#F0DCA8;}
+      /* ---- envelope popup ---- */
+      #ii-modal{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;}
+      #ii-modal.open{display:flex;}
+      #ii-modal-scrim{position:absolute;inset:0;background:rgba(6,26,24,.5);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);opacity:0;transition:opacity .4s ease;}
+      #ii-modal.open #ii-modal-scrim{opacity:1;}
+      .ii-pop{position:relative;width:100%;max-width:452px;padding:48px 44px 40px;border-radius:18px;overflow:hidden;isolation:isolate;
+        background:linear-gradient(158deg,#0C443D 0%,#0B3B36 55%,#0A342F 100%);
+        border:1px solid rgba(217,190,132,.22);
+        box-shadow:0 46px 100px rgba(4,22,20,.6),inset 0 1px 0 rgba(247,243,234,.08);
+        animation:ii_popIn .5s cubic-bezier(.22,1,.36,1);}
+      /* creative colour: soft gold glow + a faint gold arc echoing the site's circle motif */
+      .ii-pop-glow{position:absolute;top:-90px;right:-70px;width:280px;height:280px;z-index:0;pointer-events:none;
+        background:radial-gradient(circle,rgba(217,190,132,.28),transparent 68%);filter:blur(8px);}
+      .ii-pop-arc{position:absolute;bottom:-140px;left:-90px;width:280px;height:280px;z-index:0;pointer-events:none;
+        border:1px solid rgba(217,190,132,.14);border-radius:50%;}
+      .ii-pop-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;border:1px solid rgba(247,243,234,.22);background:rgba(247,243,234,.06);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;transition:background .25s,border-color .25s;}
+      .ii-pop-close:hover{background:rgba(247,243,234,.16);border-color:rgba(247,243,234,.4);}
+      /* body / success crossfade */
+      .ii-pop-body{position:relative;z-index:1;transition:opacity .3s ease,transform .3s ease;}
+      .ii-pop.done .ii-pop-body{opacity:0;transform:translateY(-8px);pointer-events:none;}
+      .ii-pop-success{position:absolute;inset:0;z-index:2;padding:48px 44px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+        opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .45s ease .12s,transform .45s ease .12s;}
+      .ii-pop.done .ii-pop-success{opacity:1;transform:none;pointer-events:auto;}
+      .ii-pop-check{width:60px;height:60px;border-radius:50%;background:#D9BE84;display:flex;align-items:center;justify-content:center;margin-bottom:22px;box-shadow:0 10px 24px rgba(217,190,132,.3);}
+      /* signature gold rule accent */
+      .ii-pop-rule{display:block;width:32px;height:2px;background:#B8923D;margin-bottom:22px;}
+      /* text */
+      .ii-pop-title{font-family:'Playfair Display',serif;font-weight:700;font-size:29px;line-height:1.12;color:#F7F3EA;margin-bottom:13px;text-wrap:balance;}
+      .ii-pop-sub{font-size:14px;line-height:1.62;color:rgba(247,243,234,.68);margin-bottom:30px;}
+      /* underline email field (matches the homepage subscribe strip) */
+      .ii-pop-field{position:relative;display:flex;align-items:center;border-bottom:1.5px solid rgba(217,190,132,.4);transition:border-color .3s;}
+      .ii-pop-field:focus-within{border-bottom-color:#D9BE84;}
+      .ii-pop-field input{flex:1;background:transparent;border:none;padding:13px 2px;font-family:'Inter';font-size:16px;color:#F7F3EA;}
+      .ii-pop-field input::placeholder{color:rgba(247,243,234,.45);}
+      .ii-pop-arrow{background:none;border:none;cursor:pointer;padding:8px 4px;display:flex;align-items:center;transition:transform .25s;}
+      .ii-pop-arrow svg path{stroke:#D9BE84;transition:stroke .25s;}
+      .ii-pop-arrow:hover{transform:translateX(4px);}
+      /* gold CTA */
+      .ii-pop-cta{position:relative;overflow:hidden;width:100%;margin-top:26px;background:#D9BE84;color:#0B3B36;border:none;cursor:pointer;font-family:'Inter';font-weight:700;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;padding:16px;border-radius:4px;transition:background .25s,transform .2s,box-shadow .25s;box-shadow:0 10px 26px rgba(217,190,132,.22);}
+      .ii-pop-cta:hover{background:#e6cd97;transform:translateY(-1px);box-shadow:0 14px 32px rgba(217,190,132,.34);}
+      .ii-pop-fine{font-size:11px;color:rgba(247,243,234,.4);margin-top:16px;text-align:center;}
+      @media(max-width:420px){.ii-pop{padding:40px 26px 32px;}.ii-pop-success{padding:40px 26px;}.ii-pop-title{font-size:24px;}}
+      /* ---- responsive ---- */
+      @media(max-width:1000px){
+        .ii-sector-grid{grid-template-columns:repeat(2,1fr) !important;}
+        .ii-premium-grid{grid-template-columns:1fr !important;gap:36px !important;}
+        .ii-insight-grid{grid-template-columns:1fr !important;gap:40px !important;}
+        .ii-slide-copy h1{font-size:44px !important;}
+      }
+      @media(max-width:900px){
+        .ii-navrow{overflow-x:auto;gap:24px !important;}
+        .ii-foot-grid{grid-template-columns:1fr 1fr !important;gap:32px !important;}
+      }
+      @media(max-width:760px){
+        header > nav{display:none !important;} /* ribbon replaced by the MENU drawer */
+      }
+      @media(max-width:680px){
+        .ii-masthead-inner{padding:0 18px !important;height:66px !important;column-gap:12px;}
+        .ii-wordmark-title{font-size:16px !important;letter-spacing:.08em !important;}
+        .ii-wordmark-sub{font-size:6.5px !important;letter-spacing:.16em !important;margin-top:5px !important;}
+        .ii-masthead-left{gap:16px !important;}
+        .ii-btn-label{display:none !important;} /* icon-only Menu + Search */
+        .ii-masthead-right{gap:12px !important;}
+        .ii-masthead-right button{padding:9px 14px !important;font-size:10.5px !important;}
+        .ii-slide-copy{padding-bottom:130px !important;}
+        .ii-slide-copy h1{font-size:34px !important;}
+        .ii-sector-grid{grid-template-columns:1fr !important;}
+        .ii-substrip{flex-direction:column;align-items:flex-start !important;gap:24px !important;}
+        .ii-sleek{min-width:0 !important;width:100%;}
+        #ii-sub-form{min-width:0 !important;width:100%;}
+        .ii-search-panel{padding:22px 22px 24px !important;}
+        .ii-search-bar input{font-size:20px !important;}
+        .ii-drawer-nav a{font-size:21px !important;}
+      }
+      @media(max-width:640px){
+        .ii-foot-grid{grid-template-columns:1fr !important;}
+      }
+    </style>
+  </body>
+</html>

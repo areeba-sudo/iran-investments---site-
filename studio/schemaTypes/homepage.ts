@@ -1,144 +1,174 @@
 import { defineField, defineType } from 'sanity';
 
+// Editor-curated homepage for the magazine design. Every block picks
+// existing content (articles, guides, sections); the site falls back to
+// the latest content when a block is left empty.
 export default defineType({
   name: 'homepage',
   title: 'Homepage',
   type: 'document',
   groups: [
-    { name: 'hero', title: 'Hero', default: true },
-    { name: 'why', title: 'Why Section' },
-    { name: 'stats', title: 'Stats' },
-    { name: 'who', title: 'Who We Are' },
-    { name: 'vision', title: 'Vision' },
-    { name: 'blog', title: 'Blog Section' },
-    { name: 'banner', title: 'Banner' },
+    { name: 'hero', title: 'Hero Carousel', default: true },
+    { name: 'stories', title: 'Secondary Stories' },
+    { name: 'market', title: 'Market Snapshot' },
+    { name: 'guide', title: 'Premium Guide' },
+    { name: 'sectors', title: 'Explore Sectors' },
+    { name: 'insight', title: 'Featured Insight' },
     { name: 'seo', title: 'SEO' },
   ],
   fields: [
-    // ── HERO ──
+    // ── HERO CAROUSEL ──
     defineField({
-      name: 'heroPill',
-      title: 'Pill text',
-      description: 'Small pill above the headline, e.g. "🗞 Newsletter · Free to Read"',
-      type: 'string',
+      name: 'heroSlides',
+      title: 'Hero slides (up to 3 articles)',
+      description: 'Pick the articles for the rotating hero. Empty = latest featured articles.',
+      type: 'array',
       group: 'hero',
-    }),
-    defineField({
-      name: 'heroHeadline',
-      title: 'Headline',
-      type: 'string',
-      group: 'hero',
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'heroHeadlineAccent',
-      title: 'Headline accent word',
-      description: 'The word/phrase shown in orange italic at the end of the headline, e.g. "Now"',
-      type: 'string',
-      group: 'hero',
-    }),
-    defineField({
-      name: 'heroSubheadline',
-      title: 'Subheadline',
-      type: 'text',
-      rows: 3,
-      group: 'hero',
+      validation: (Rule) => Rule.max(3),
+      of: [
+        {
+          type: 'object',
+          title: 'Slide',
+          fields: [
+            {
+              name: 'article',
+              title: 'Article',
+              type: 'reference',
+              to: [{ type: 'post' }],
+              validation: (Rule: any) => Rule.required(),
+            },
+            {
+              name: 'kickerOverride',
+              title: 'Kicker override',
+              description: 'e.g. "Featured · Lead Story". Empty = article\'s kicker/section.',
+              type: 'string',
+            },
+          ],
+          preview: {
+            select: { title: 'article.title', media: 'article.coverImage' },
+          },
+        },
+      ],
     }),
 
-    // ── WHY SECTION ──
+    // ── SECONDARY STORIES ──
     defineField({
-      name: 'whyTag',
-      title: 'Section tag',
-      type: 'string',
-      group: 'why',
+      name: 'secondaryStories',
+      title: 'Secondary stories (2 articles)',
+      description: 'The two headlines directly under the hero. Empty = next latest articles.',
+      type: 'array',
+      group: 'stories',
+      validation: (Rule) => Rule.max(2),
+      of: [{ type: 'reference', to: [{ type: 'post' }] }],
+    }),
+
+    // ── MARKET SNAPSHOT ──
+    defineField({
+      name: 'marketAsOf',
+      title: 'Snapshot date',
+      type: 'date',
+      group: 'market',
     }),
     defineField({
-      name: 'whyHeading',
+      name: 'marketMetrics',
+      title: 'Metrics (up to 6)',
+      type: 'array',
+      group: 'market',
+      validation: (Rule) => Rule.max(6),
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'label', type: 'string', title: 'Label (e.g. "GDP Growth")' },
+            { name: 'value', type: 'string', title: 'Value (e.g. "4.2%")' },
+            { name: 'change', type: 'string', title: 'Change (e.g. "0.6")' },
+            {
+              name: 'direction',
+              type: 'string',
+              title: 'Direction',
+              options: {
+                list: [
+                  { title: '▲ Up (green)', value: 'up' },
+                  { title: '▼ Down (green — improvement)', value: 'down-good' },
+                  { title: '▼ Down (red)', value: 'down-bad' },
+                ],
+                layout: 'radio',
+              },
+              initialValue: 'up',
+            },
+            {
+              name: 'liveSource',
+              type: 'string',
+              title: 'Live auto-update (optional)',
+              description:
+                'Leave as "Manual" to type the value yourself (use this for all Iran-specific figures). ' +
+                'Choose "Brent oil" to have this metric refresh automatically from the live global oil price.',
+              options: {
+                list: [
+                  { title: 'Manual (you type it)', value: 'manual' },
+                  { title: 'Brent oil — live', value: 'brent' },
+                ],
+                layout: 'radio',
+              },
+              initialValue: 'manual',
+            },
+          ],
+          preview: { select: { title: 'label', subtitle: 'value' } },
+        },
+      ],
+    }),
+
+    // ── PREMIUM GUIDE ──
+    defineField({
+      name: 'premiumGuide',
+      title: 'Featured guide',
+      description: 'The PDF guide promoted in the big green callout.',
+      type: 'reference',
+      to: [{ type: 'guide' }],
+      group: 'guide',
+    }),
+
+    // ── EXPLORE SECTORS ──
+    defineField({
+      name: 'sectorsHeading',
       title: 'Heading',
       type: 'string',
-      group: 'why',
+      group: 'sectors',
+      initialValue: 'Where Iranian capital is moving next.',
     }),
     defineField({
-      name: 'whyBody',
-      title: 'Body',
+      name: 'sectorsIntro',
+      title: 'Intro text',
       type: 'text',
-      rows: 3,
-      group: 'why',
+      rows: 2,
+      group: 'sectors',
     }),
     defineField({
-      name: 'whyItems',
-      title: 'Three reasons',
+      name: 'featuredSections',
+      title: 'Sections to feature (4 cards)',
+      description: 'Empty = first 4 sections by sort order.',
       type: 'array',
-      group: 'why',
-      validation: (Rule) => Rule.length(3),
-      of: [
-        {
-          type: 'object',
-          fields: [
-            { name: 'title', type: 'string', title: 'Title' },
-            { name: 'body', type: 'text', title: 'Body', rows: 3 },
-            { name: 'pillLabel', type: 'string', title: 'Pill label' },
-          ],
-          preview: { select: { title: 'title' } },
-        },
-      ],
+      group: 'sectors',
+      validation: (Rule) => Rule.max(4),
+      of: [{ type: 'reference', to: [{ type: 'section' }] }],
     }),
 
-    // ── STATS ──
+    // ── FEATURED INSIGHT ──
     defineField({
-      name: 'stats',
-      title: 'Stats (exactly 4)',
-      type: 'array',
-      group: 'stats',
-      validation: (Rule) => Rule.length(4),
-      of: [
-        {
-          type: 'object',
-          fields: [
-            { name: 'target', type: 'number', title: 'Number' },
-            { name: 'unit', type: 'string', title: 'Unit (e.g. "M+", "B+", "M ha")' },
-            { name: 'label', type: 'string', title: 'Label' },
-            { name: 'desc', type: 'text', title: 'Description', rows: 2 },
-          ],
-          preview: { select: { title: 'label', subtitle: 'target' } },
-        },
-      ],
+      name: 'featuredInsight',
+      title: 'Featured insight article',
+      description: 'The opinion/analysis piece highlighted near the bottom.',
+      type: 'reference',
+      to: [{ type: 'post' }],
+      group: 'insight',
     }),
-
-    // ── WHO WE ARE ──
-    defineField({ name: 'whoTag', title: 'Section tag', type: 'string', group: 'who' }),
-    defineField({ name: 'whoHeading', title: 'Heading', type: 'string', group: 'who' }),
-    defineField({ name: 'whoTagline', title: 'Tagline', type: 'string', group: 'who' }),
-    defineField({ name: 'whoBody', title: 'Body', type: 'text', rows: 3, group: 'who' }),
     defineField({
-      name: 'whoReaderCards',
-      title: 'Reader cards (exactly 4)',
-      type: 'array',
-      group: 'who',
-      validation: (Rule) => Rule.length(4),
-      of: [
-        {
-          type: 'object',
-          fields: [
-            { name: 'title', type: 'string', title: 'Title' },
-            { name: 'body', type: 'text', title: 'Body', rows: 2 },
-          ],
-          preview: { select: { title: 'title' } },
-        },
-      ],
+      name: 'insightBadge',
+      title: 'Corner badge text',
+      type: 'string',
+      group: 'insight',
+      initialValue: 'Opinion · Weekly Column',
     }),
-
-    // ── VISION ──
-    defineField({ name: 'visionTag', title: 'Section tag', type: 'string', group: 'vision' }),
-    defineField({ name: 'visionQuote', title: 'Quote', type: 'text', rows: 3, group: 'vision' }),
-
-    // ── BLOG SECTION ──
-    defineField({ name: 'blogTag', title: 'Section tag', type: 'string', group: 'blog' }),
-    defineField({ name: 'blogHeading', title: 'Heading', type: 'string', group: 'blog' }),
-
-    // ── BANNER ──
-    defineField({ name: 'bannerHeading', title: 'Heading', type: 'string', group: 'banner' }),
-    defineField({ name: 'bannerBody', title: 'Body', type: 'text', rows: 2, group: 'banner' }),
 
     // ── SEO ──
     defineField({ name: 'seo', title: 'SEO', type: 'seo', group: 'seo' }),

@@ -1,0 +1,39 @@
+---
+// Editable call-to-action banner promoting a downloadable resource.
+// Content comes from the section's `featuredDownload` (CMS) — the client can
+// swap the featured piece anytime. Renders nothing if no resource is set.
+import type { FeaturedDownload } from '../lib/sanity';
+
+interface Props {
+  data?: FeaturedDownload | null;
+}
+const { data } = Astro.props;
+const resource = data?.resource;
+const heading = data?.heading || resource?.title;
+const badge = resource?.badgeLabel || 'Free Download';
+const buttonLabel = data?.buttonLabel || 'Download';
+---
+{resource && (
+  <section data-reveal style="background:#F7F3EA;padding:20px 0 64px;">
+    <div style="max-width:1280px;margin:0 auto;padding:0 40px;">
+      <div class="ii-fdl" style="position:relative;overflow:hidden;border-radius:8px;background:linear-gradient(120deg,#0B3B36 0%,#0F5049 55%,#0B3B36 100%);box-shadow:0 26px 60px rgba(11,59,54,.24);display:flex;align-items:center;justify-content:space-between;gap:40px;padding:42px 48px;flex-wrap:wrap;">
+        <div style="position:absolute;width:300px;height:300px;top:-120px;right:4%;border-radius:50%;background:radial-gradient(circle,rgba(217,190,132,.28),transparent 68%);filter:blur(28px);pointer-events:none;"></div>
+        <div style="position:relative;max-width:600px;">
+          <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:14px;"><span style="width:24px;height:1px;background:#B8923D;"></span><span style="font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#D9BE84;">{badge}</span></div>
+          <h3 style="font-family:'Playfair Display',serif;font-weight:700;font-size:27px;line-height:1.16;color:#F7F3EA;text-wrap:balance;">{heading}</h3>
+          {data?.blurb && <p style="font-size:14.5px;line-height:1.6;color:rgba(247,243,234,.72);margin-top:11px;max-width:520px;">{data.blurb}</p>}
+        </div>
+        <button class="ii-getbtn ii-open-modal" data-modal="guide" data-guide-id={resource._id} style="position:relative;flex-shrink:0;">
+          <span class="sheen"></span>{buttonLabel}
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="none"><path d="M0 5.5h15M11 1l4.5 4.5L11 10" stroke="#0B3B36" stroke-width="1.6"></path></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  @media (max-width: 720px) {
+    .ii-fdl { padding: 34px 28px !important; }
+  }
+</style>

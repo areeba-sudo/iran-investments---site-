@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity';
 
 export default defineType({
   name: 'post',
-  title: 'Blog Post',
+  title: 'Article',
   type: 'document',
   groups: [
     { name: 'content', title: 'Content', default: true },
@@ -25,19 +25,41 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'category',
-      title: 'Category',
-      type: 'string',
+      name: 'section',
+      title: 'Section',
+      type: 'reference',
+      to: [{ type: 'section' }],
+      group: 'content',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'topic',
+      title: 'Topic (tab)',
+      description: 'Optional. The sub-section tab this article files under (e.g. "Pharmaceuticals" under Sectors). Only topics belonging to the selected section are shown.',
+      type: 'reference',
+      to: [{ type: 'topic' }],
       group: 'content',
       options: {
-        list: [
-          { title: 'Investment Opportunities', value: 'investment' },
-          { title: 'The Hidden Obvious', value: 'hidden' },
-          { title: 'Strategy & Operations', value: 'strategy' },
-        ],
-        layout: 'radio',
+        filter: ({ document }: any) => {
+          const sectionRef = document?.section?._ref;
+          if (!sectionRef) return { filter: 'false' };
+          return { filter: 'section._ref == $sectionRef', params: { sectionRef } };
+        },
       },
-      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'author',
+      title: 'Author',
+      type: 'reference',
+      to: [{ type: 'author' }],
+      group: 'content',
+    }),
+    defineField({
+      name: 'kicker',
+      title: 'Kicker label',
+      description: 'Small label above the headline, e.g. "Opinion · Weekly Column". Falls back to the section name.',
+      type: 'string',
+      group: 'content',
     }),
     defineField({
       name: 'excerpt',
@@ -69,6 +91,14 @@ export default defineType({
       description: 'e.g. "8 min read"',
       type: 'string',
       group: 'content',
+    }),
+    defineField({
+      name: 'featured',
+      title: 'Featured',
+      description: 'Featured articles are eligible for the homepage hero when curation is empty.',
+      type: 'boolean',
+      group: 'content',
+      initialValue: false,
     }),
     defineField({
       name: 'body',
@@ -105,6 +135,14 @@ export default defineType({
         },
       ],
     }),
+    // Legacy field from the pre-revamp site; kept hidden until the section
+    // migration has run everywhere, then it can be deleted.
+    defineField({
+      name: 'category',
+      title: 'Category (legacy)',
+      type: 'string',
+      hidden: true,
+    }),
     defineField({
       name: 'seo',
       title: 'SEO',
@@ -112,10 +150,17 @@ export default defineType({
       group: 'seo',
     }),
   ],
+  orderings: [
+    {
+      title: 'Newest first',
+      name: 'dateDesc',
+      by: [{ field: 'publishedDate', direction: 'desc' }],
+    },
+  ],
   preview: {
-    select: { title: 'title', category: 'category', media: 'coverImage' },
-    prepare({ title, category, media }) {
-      return { title, subtitle: category, media };
+    select: { title: 'title', section: 'section.title', media: 'coverImage' },
+    prepare({ title, section, media }) {
+      return { title, subtitle: section, media };
     },
   },
 });

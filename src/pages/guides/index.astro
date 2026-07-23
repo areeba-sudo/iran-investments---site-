@@ -1,0 +1,22 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import ResourceGrid from '../../components/ResourceGrid.astro';
+import { getResourcesByType } from '../../lib/sanity';
+
+const resources = await getResourcesByType('guide');
+---
+<SiteLayout
+  title="Guides — Iran Investment"
+  description="Practitioner guides on structuring, entering, and operating in the Iranian market — free to download."
+>
+  <div style="background:#F7F3EA;">
+    <section style="max-width:1280px;margin:0 auto;padding:76px 40px 56px;">
+      <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:18px;"><span style="width:26px;height:1px;background:#B8923D;"></span><span style="font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#B8923D;">Resources · Guides</span></div>
+      <h1 style="font-family:'Playfair Display',serif;font-weight:700;font-size:48px;line-height:1.08;color:#0B3B36;margin-bottom:16px;max-width:720px;">Practitioner guides, free to download.</h1>
+      <p style="font-size:16px;line-height:1.65;color:#5B584F;max-width:560px;">Actionable, hands-on references on structuring, entering, and operating in the Iranian market — delivered straight to your inbox.</p>
+    </section>
+    <section style="max-width:1280px;margin:0 auto;padding:0 40px 96px;">
+      <ResourceGrid resources={resources} emptyLabel="New guides are in the works." />
+    </section>
+  </div>
+</SiteLayout>

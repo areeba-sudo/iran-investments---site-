@@ -1,0 +1,41 @@
+---
+// Grid of gated PDF resources (Guides or White Papers). Each card opens the
+// glass modal in guide mode → email → Beehiiv → PDF download.
+import type { GuideDoc } from '../lib/sanity';
+
+interface Props {
+  resources: GuideDoc[];
+  emptyLabel: string;
+}
+const { resources, emptyLabel } = Astro.props;
+---
+{resources.length === 0 ? (
+  <div style="border:1px dashed #C9BF9F;border-radius:6px;padding:64px 40px;text-align:center;">
+    <div style="font-family:'Playfair Display',serif;font-weight:600;font-size:24px;color:#0B3B36;margin-bottom:10px;">{emptyLabel}</div>
+    <p style="font-size:14.5px;color:#5B584F;max-width:440px;margin:0 auto;">Subscribe to the newsletter and you'll be the first to get each release the day it's published.</p>
+  </div>
+) : (
+  <div class="ii-res-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:28px;">
+    {resources.map((r) => (
+      <div class="ii-lift" data-reveal style="position:relative;overflow:hidden;border-radius:6px;border:1px solid #E4DCC8;background:linear-gradient(150deg,#0B3B36 0%,#0F5049 100%);padding:38px 34px;display:flex;flex-direction:column;gap:16px;min-height:320px;">
+        <div style="display:inline-flex;align-items:center;gap:9px;align-self:flex-start;background:rgba(217,190,132,.14);border:1px solid rgba(217,190,132,.4);padding:6px 13px;border-radius:100px;">
+          <span style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#D9BE84;">{r.badgeLabel || (r.resourceType === 'whitepaper' ? 'White Paper' : 'Free Guide')}</span>
+        </div>
+        <h2 style="font-family:'Playfair Display',serif;font-weight:700;font-size:25px;line-height:1.18;color:#F7F3EA;text-wrap:balance;">{r.title}</h2>
+        <p style="font-size:14px;line-height:1.65;color:rgba(247,243,234,.72);flex:1;">{r.description}</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+          <button class="ii-getbtn ii-open-modal" data-modal="guide" data-guide-id={r._id} style="padding:14px 26px;font-size:12px;"><span class="sheen"></span>Download
+            <svg width="15" height="10" viewBox="0 0 17 11" fill="none"><path d="M0 5.5h15M11 1l4.5 4.5L11 10" stroke="#0B3B36" stroke-width="1.6"></path></svg>
+          </button>
+          {r.editionLabel && <span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,243,234,.5);">{r.editionLabel}</span>}
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+
+<style is:global>
+  @media (max-width: 640px) {
+    .ii-res-grid { grid-template-columns: 1fr !important; }
+  }
+</style>

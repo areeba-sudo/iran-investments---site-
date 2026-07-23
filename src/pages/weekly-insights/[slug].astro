@@ -1,0 +1,81 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import SubscribeStrip from '../../components/SubscribeStrip.astro';
+import { getWeeklyEditions, getWeeklyEditionBySlug, urlFor, type WeeklyEditionDetail } from '../../lib/sanity';
+import { bodyToHTML } from '../../lib/portableText';
+
+export async function getStaticPaths() {
+  const editions = await getWeeklyEditions();
+  const details = await Promise.all(editions.map((e) => getWeeklyEditionBySlug(e.slug)));
+  return details
+    .filter((e): e is WeeklyEditionDetail => Boolean(e))
+    .map((edition) => ({ params: { slug: edition.slug }, props: { edition } }));
+}
+
+const { edition } = Astro.props as { edition: WeeklyEditionDetail };
+const dt = new Date(edition.editionDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+// Wide banner uses the edition's inner banner (falls back to the cover).
+const bannerSrc = urlFor(edition.bannerImage || edition.coverImage).width(2000).auto('format').url();
+const bodyHtml = bodyToHTML(edition.body);
+---
+<SiteLayout
+  title={edition.seo?.metaTitle || `${edition.title} — Iran Investment`}
+  description={edition.seo?.metaDescription || edition.excerpt}
+>
+  <article style="background:#F7F3EA;">
+    <!-- WIDE BANNER -->
+    <div class="ii-web" style="width:100%;overflow:hidden;background:#EDE7D7;">
+      <img src={bannerSrc} alt={edition.title} />
+    </div>
+
+    <!-- HEADER -->
+    <header style="max-width:820px;margin:0 auto;padding:44px 40px 8px;">
+      <nav style="display:flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8a8676;margin-bottom:22px;">
+        <a href="/" style="color:#8a8676;text-decoration:none;">Home</a>
+        <span>›</span>
+        <a href="/weekly-insights/" style="color:#8a8676;text-decoration:none;">Weekly Insights</a>
+      </nav>
+      <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:20px;"><span style="width:26px;height:1px;background:#B8923D;"></span><span style="font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#B8923D;">{edition.editionLabel || 'Weekly Edition'} · {dt}</span></div>
+      <h1 style="font-family:'Playfair Display',serif;font-weight:700;font-size:44px;line-height:1.1;letter-spacing:-.01em;color:#0B3B36;margin-bottom:22px;text-wrap:balance;">{edition.title}</h1>
+      <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:#5B584F;flex-wrap:wrap;padding-bottom:6px;border-bottom:1px solid #E4DCC8;">
+        {edition.author?.name && (
+          <>
+            <span style="font-weight:600;color:#1C1C1A;">{edition.author.name}</span>
+            {edition.author.role && <span>· {edition.author.role}</span>}
+            <span style="width:3px;height:3px;border-radius:50%;background:#B8923D;"></span>
+          </>
+        )}
+        <span>{dt}</span>
+        {edition.readTime && <span style="width:3px;height:3px;border-radius:50%;background:#B8923D;"></span>}
+        {edition.readTime && <span>{edition.readTime}</span>}
+      </div>
+    </header>
+
+    <!-- BODY -->
+    <div class="ii-article-body" style="max-width:760px;margin:0 auto;padding:44px 40px 80px;">
+      <Fragment set:html={bodyHtml} />
+    </div>
+
+    <SubscribeStrip />
+  </article>
+</SiteLayout>
+
+<style is:global>
+  /* article typography (shared with blog articles) */
+  .ii-article-body { font-size: 17px; line-height: 1.78; color: #33322e; }
+  .ii-article-body p { margin: 0 0 24px; }
+  .ii-article-body .art-intro-p { font-size: 20.5px; line-height: 1.65; color: #1c1c1a; font-weight: 400; }
+  .ii-article-body .art-intro-p::first-letter { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 58px; line-height: 0.85; float: left; margin: 6px 12px 0 0; color: #0b3b36; }
+  .ii-article-body h2 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 30px; line-height: 1.2; color: #0b3b36; margin: 44px 0 18px; }
+  .ii-article-body h3 { font-family: 'Playfair Display', serif; font-weight: 600; font-size: 23px; line-height: 1.25; color: #0b3b36; margin: 36px 0 14px; }
+  .ii-article-body blockquote { margin: 36px 0; padding: 6px 0 6px 28px; border-left: 3px solid #b8923d; font-family: 'Playfair Display', serif; font-style: italic; font-size: 22px; line-height: 1.5; color: #0b3b36; }
+  .ii-article-body img { width: 100%; border-radius: 4px; margin: 36px 0; }
+  .ii-article-body a { color: #0b3b36; text-decoration: underline; text-decoration-color: #d9be84; text-underline-offset: 3px; }
+  .ii-article-body a:hover { color: #b8923d; }
+  .ii-article-body strong { color: #1c1c1a; }
+  @media (max-width: 680px) {
+    article header h1 { font-size: 32px !important; }
+    .ii-article-body { font-size: 16px; padding: 34px 24px 64px; }
+    article header { padding: 32px 24px 8px !important; }
+  }
+</style>

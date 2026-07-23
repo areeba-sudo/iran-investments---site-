@@ -11,3 +11,29 @@
   # appear in the public image CDN URLs the site serves.
   SANITY_PROJECT_ID = "h4z2q6ep"
   SANITY_DATASET = "production"
+
+# Serverless functions (newsletter subscribe + gated PDF downloads).
+# Secrets are set in the Netlify UI (Site settings → Environment variables):
+#   BEEHIIV_API_KEY        — create in Beehiiv: Settings → Integrations → API
+#   BEEHIIV_PUBLICATION_ID — optional; defaults to the Iran Investments publication
+#   ALPHAVANTAGE_API_KEY   — free key from alphavantage.co; powers the live Brent
+#                            oil price in the homepage ticker (/api/market). If
+#                            unset, the ticker just shows the CMS values.
+[functions]
+  directory = "netlify/functions"
+
+# Legacy category URLs → the retired sections' new homes (kept for old inbound links).
+[[redirects]]
+  from = "/blog/category/investment/*"
+  to = "/blog/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/category/hidden/*"
+  to = "/blog/"
+  status = 301
+
+[[redirects]]
+  from = "/blog/category/strategy/*"
+  to = "/blog/"
+  status = 301

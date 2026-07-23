@@ -1,0 +1,99 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import SubscribeStrip from '../../components/SubscribeStrip.astro';
+import { getWeeklyEditions, urlFor } from '../../lib/sanity';
+
+const editions = await getWeeklyEditions();
+const rest = editions.slice(1);
+const fmtShort = (d: string) => new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+function econDate(d: string) {
+  const dt = new Date(d);
+  const n = dt.getDate();
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  const ord = n + (s[(v - 20) % 10] || s[v] || s[0]);
+  return `${dt.toLocaleDateString('en-GB', { month: 'long' })} ${ord} ${dt.getFullYear()}`;
+}
+---
+<SiteLayout
+  title="Weekly Insights — Iran Investment"
+  description="The weekly edition: our column on the forces reshaping Iran's economy, markets, and the opportunities inside them."
+>
+  <div style="background:#F7F3EA;">
+    <!-- HERO CAROUSEL (Economist-style, light) -->
+    {editions.length > 0 && (
+      <section style="background:#F4EFE4;border-bottom:1px solid #E4DCC8;">
+        <div style="max-width:1220px;margin:0 auto;padding:64px 40px 66px;">
+          <div class="ii-wc">
+            <div class="ii-wc-track">
+              {editions.map((w, i) => (
+                <div class={`ii-wc-slide${i === 0 ? ' on' : ''}`} data-wc={i}>
+                  <div class="ii-we2-grid">
+                    <div class="ii-we2-copy">
+                      <div style="font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#B8923D;margin-bottom:20px;">Weekly Edition</div>
+                      <div style="font-family:'Playfair Display',serif;font-weight:500;font-size:38px;line-height:1.1;color:#0B3B36;">{econDate(w.editionDate)}</div>
+                      <h1 style="font-family:'Playfair Display',serif;font-weight:700;font-size:38px;line-height:1.12;color:#0B3B36;margin-top:6px;text-wrap:balance;">{w.title}</h1>
+                      <div class="ii-we2-controls">
+                        <a href="#previous-editions" class="ii-we2-past">Past editions</a>
+                        <div class="ii-we2-arrows">
+                          <button class="ii-wc-arrow" data-wc-dir="-1" aria-label="Previous edition"><svg width="16" height="12" viewBox="0 0 17 12" fill="none"><path d="M17 6H2M6 1L1 6l5 5" stroke="#0B3B36" stroke-width="1.5"></path></svg></button>
+                          <button class="ii-wc-arrow" data-wc-dir="1" aria-label="Next edition"><svg width="16" height="12" viewBox="0 0 17 12" fill="none"><path d="M0 6h15M11 1l5 5-5 5" stroke="#0B3B36" stroke-width="1.5"></path></svg></button>
+                        </div>
+                      </div>
+                    </div>
+                    <a href={`/weekly-insights/${w.slug}/`} class="ii-we2-cover" aria-label={w.title}>
+                      <img src={urlFor(w.coverImage).width(900).auto('format').url()} alt={w.title} loading={i === 0 ? 'eager' : 'lazy'} />
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- PREVIOUS EDITIONS -->
+    {rest.length > 0 && (
+      <section id="previous-editions" style="max-width:1280px;margin:0 auto;padding:64px 40px 88px;scroll-margin-top:90px;">
+        <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:32px;"><span style="width:26px;height:1px;background:#B8923D;"></span><span style="font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#B8923D;">Past Editions</span></div>
+        <div class="ii-we-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:32px;">
+          {rest.map((w) => (
+            <a href={`/weekly-insights/${w.slug}/`} class="ii-lift" style="display:flex;flex-direction:column;background:#FBF9F3;border:1px solid #E4DCC8;border-radius:4px;overflow:hidden;text-decoration:none;">
+              <div style="aspect-ratio:1/1;overflow:hidden;background:#EDE7D7;">
+                <img src={urlFor(w.bannerImage || w.coverImage).width(760).height(760).auto('format').url()} alt={w.title} loading="lazy" style="width:100%;height:100%;object-fit:cover;" />
+              </div>
+              <div style="padding:20px 22px 24px;display:flex;flex-direction:column;gap:9px;">
+                <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#B8923D;">{fmtShort(w.editionDate)}</div>
+                <h3 style="font-family:'Playfair Display',serif;font-weight:600;font-size:19px;line-height:1.24;color:#1C1C1A;">{w.title}</h3>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <SubscribeStrip />
+  </div>
+</SiteLayout>
+
+<style is:global>
+  .ii-we2-grid { display: grid; grid-template-columns: 1fr 0.82fr; gap: 60px; align-items: center; }
+  .ii-we2-cover { display: block; justify-self: end; width: 100%; max-width: 440px; border-radius: 3px; overflow: hidden; box-shadow: 0 30px 60px rgba(11,59,54,.22); transition: transform .4s ease, box-shadow .4s ease; }
+  .ii-we2-cover img { display: block; width: 100%; height: auto; }
+  .ii-we2-cover:hover { transform: translateY(-4px); box-shadow: 0 38px 74px rgba(11,59,54,.28); }
+  .ii-we2-controls { display: flex; align-items: center; gap: 16px; margin-top: 38px; }
+  .ii-we2-past { display: inline-flex; align-items: center; border: 1px solid #C4B896; border-radius: 100px; padding: 12px 26px; font-family: 'Inter'; font-size: 12px; font-weight: 600; letter-spacing: .04em; color: #0B3B36; text-decoration: none; transition: background .25s, border-color .25s; }
+  .ii-we2-past:hover { background: #0B3B36; border-color: #0B3B36; color: #F7F3EA; }
+  .ii-we2-arrows { display: flex; align-items: center; gap: 10px; }
+  @media (max-width: 900px) {
+    .ii-we2-grid { grid-template-columns: 1fr; gap: 36px; }
+    .ii-we2-cover { justify-self: start; max-width: 340px; }
+    .ii-we2-copy > div:nth-child(2), .ii-we2-copy h1 { font-size: 30px !important; }
+  }
+</style>
+
+<style is:global>
+  @media (max-width: 960px) { .ii-we-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+  @media (max-width: 620px) { .ii-we-grid { grid-template-columns: 1fr !important; } }
+</style>

@@ -1,49 +1,48 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PostCard from '../../components/PostCard.astro';
-import { getPostsByCategory, type Category } from '../../lib/sanity';
-import categories from '../../data/categories.json';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import SubscribeStrip from '../../components/SubscribeStrip.astro';
+import { getAllPosts, getLiveSections, sectionHref } from '../../lib/sanity';
 
-const cats: Category[] = ['investment', 'hidden', 'strategy'];
-const sections = await Promise.all(
-  cats.map(async (s) => ({ cat: s, meta: categories[s], posts: await getPostsByCategory(s) }))
-);
+const [posts, sections] = await Promise.all([getAllPosts(), getLiveSections()]);
 ---
-<BaseLayout title="Our Content — Iran Investments" description="Three categories. One mission. Intelligence that moves you.">
-  <div class="cp-hero">
-    <div class="st">Our Content</div>
-    <h1>Intelligence That <em style="background:linear-gradient(90deg,#eb5e3e,#c43e20,#ff7050,#eb5e3e);background-size:200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3.5s linear infinite">Moves You.</em></h1>
-    <p>Three categories. One mission.</p>
-  </div>
-
-  {sections.map(({ cat, meta, posts }) => (
-    <div class="cp-sec">
-      <div class="cp-sec-inner">
-        <div class="cp-sec-hd">
-          <div class="cp-sec-hd-left">
-            <div class="st">{meta.label}</div>
-            <h2>{meta.label}</h2>
-            <p>{meta.desc}</p>
-          </div>
-          <div class="sl-btns">
-            <button class="sl-btn" onclick={`cpSlide('${cat}',-1)`}>←</button>
-            <button class="sl-btn" onclick={`cpSlide('${cat}',1)`}>→</button>
-          </div>
+<SiteLayout
+  title="All Articles — Iran Investment"
+  description="Every article from Iran Investment — economics, markets, sectors, and strategy for the Iranian market."
+>
+  <div style="background:#F7F3EA;">
+    <!-- PAGE HEADER -->
+    <section style="border-bottom:1px solid #E4DCC8;">
+      <div style="max-width:1280px;margin:0 auto;padding:72px 40px 48px;">
+        <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:18px;"><span style="width:26px;height:1px;background:#B8923D;"></span><span style="font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#B8923D;">The Archive</span></div>
+        <h1 style="font-family:'Playfair Display',serif;font-weight:700;font-size:48px;line-height:1.08;color:#0B3B36;margin-bottom:26px;">All Articles</h1>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:11px;font-weight:600;letter-spacing:.08em;padding:8px 16px;border-radius:100px;background:#0B3B36;color:#F7F3EA;">All ({posts.length})</span>
+          {sections.map((s) => (
+            <a href={sectionHref(s)} style="font-size:11px;font-weight:600;letter-spacing:.08em;padding:8px 16px;border-radius:100px;border:1px solid #C9BF9F;color:#5B584F;text-decoration:none;transition:all .25s;">{s.title}</a>
+          ))}
         </div>
-        <div class="sl-outer">
-          <div class="sl-track" id={`cpt-${cat}`}>
-            {posts.map((post) => <PostCard post={post} />)}
-          </div>
-        </div>
-        <button class="view-all-btn" onclick={`location.href='/blog/category/${cat}/'`}>View All {meta.label} →</button>
       </div>
-    </div>
-  ))}
+    </section>
 
-  <script>
-    import { initBlogIndex } from '../../scripts/blogIndex.js';
-    document.addEventListener('DOMContentLoaded', () => {
-      initBlogIndex();
-    });
-  </script>
-</BaseLayout>
+    <!-- GRID -->
+    <section style="max-width:1280px;margin:0 auto;padding:56px 40px 96px;">
+      <div class="ii-cards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;">
+        {posts.map((post, i) => (
+          <ArticleCard post={post} eager={i < 3} />
+        ))}
+      </div>
+    </section>
+
+    <SubscribeStrip />
+  </div>
+</SiteLayout>
+
+<style is:global>
+  @media (max-width: 1000px) {
+    .ii-cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+  @media (max-width: 640px) {
+    .ii-cards-grid { grid-template-columns: 1fr !important; }
+  }
+</style>
