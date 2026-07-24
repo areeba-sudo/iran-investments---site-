@@ -19,22 +19,23 @@ export async function getStaticPaths() {
 }
 
 const { post, more } = Astro.props as { post: PostDetail; more: PostSummary[] };
-const dt = new Date(post.publishedDate).toLocaleDateString('en-GB', {
-  day: '2-digit',
-  month: 'long',
-  year: 'numeric',
-});
-const bannerUrl = urlFor(post.coverImage).width(2000).auto('format').url();
+const dt = post.publishedDate
+  ? new Date(post.publishedDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })
+  : '';
+// Cover image is optional — never let a missing image break the build.
+const bannerUrl = post.coverImage ? urlFor(post.coverImage).width(2000).auto('format').url() : '';
 const bodyHtml = bodyToHTML(post.body);
 const kicker = post.kicker || post.section?.title || 'Analysis';
 ---
 <SiteLayout title={post.seo?.metaTitle || `${post.title} — Iran Investment`} description={post.seo?.metaDescription || post.excerpt}>
   <article style="background:#F7F3EA;">
 
-    <!-- WIDE BANNER (shared size across all inner pages) -->
-    <div class="ii-web">
-      <img src={bannerUrl} alt={post.title} />
-    </div>
+    <!-- WIDE BANNER (shared size across all inner pages) — only if the article has a cover -->
+    {bannerUrl && (
+      <div class="ii-web">
+        <img src={bannerUrl} alt={post.title} />
+      </div>
+    )}
 
     <!-- HEADER -->
     <header style="max-width:820px;margin:0 auto;padding:44px 40px 8px;">
@@ -57,7 +58,7 @@ const kicker = post.kicker || post.section?.title || 'Analysis';
             <span style="width:3px;height:3px;border-radius:50%;background:#B8923D;"></span>
           </>
         )}
-        <span>{dt}</span>
+        {dt && <span>{dt}</span>}
         {post.readTime && <span style="width:3px;height:3px;border-radius:50%;background:#B8923D;"></span>}
         {post.readTime && <span>{post.readTime}</span>}
       </div>
