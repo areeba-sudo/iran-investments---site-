@@ -277,11 +277,13 @@ const DEFAULT_MARKET: { asOf: string; metrics: MarketMetric[] } = {
 };
 
 export async function getMarketSnapshot(): Promise<{ asOf?: string; metrics: MarketMetric[] }> {
-  const home = await sanityClient.fetch<{ marketAsOf?: string; marketMetrics?: MarketMetric[] } | null>(
-    `*[_id == "homepage"][0]{ marketAsOf, marketMetrics }`
-  );
+  const home = await sanityClient.fetch<
+    { marketAsOf?: string; marketMetrics?: MarketMetric[]; _updatedAt?: string } | null
+  >(`*[_id == "homepage"][0]{ marketAsOf, marketMetrics, _updatedAt }`);
   const metrics = home?.marketMetrics?.length ? home.marketMetrics : DEFAULT_MARKET.metrics;
-  return { asOf: home?.marketAsOf || DEFAULT_MARKET.asOf, metrics };
+  // Date auto-follows the last CMS edit (_updatedAt); marketAsOf is an optional manual override.
+  const asOf = home?.marketAsOf || home?._updatedAt || DEFAULT_MARKET.asOf;
+  return { asOf, metrics };
 }
 
 // Only posts assigned to a live (nav-visible) section are rendered anywhere on

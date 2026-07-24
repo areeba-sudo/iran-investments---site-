@@ -65,7 +65,10 @@ export default defineType({
     // ── MARKET SNAPSHOT ──
     defineField({
       name: 'marketAsOf',
-      title: 'Snapshot date',
+      title: 'Snapshot date (optional override)',
+      description:
+        'Leave blank — the "as of" date updates automatically to whenever you last edit ' +
+        'this page. Only set a date here to force a specific date instead.',
       type: 'date',
       group: 'market',
     }),
